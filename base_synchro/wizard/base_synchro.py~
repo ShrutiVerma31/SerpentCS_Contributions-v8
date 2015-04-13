@@ -45,7 +45,6 @@ class RPCProxyOne(object):
 class RPCProxy(object):
     def __init__(self, server):
         self.server = server
-        self.db_name = server.server_db
     def get(self, ressource):
         return RPCProxyOne(self.server, ressource)
 
@@ -201,10 +200,10 @@ class base_synchro(osv.TransientModel):
     #
 
     def data_transform(self, cr, uid, pool_src, pool_dest, object, data, action='u', context=None):
-        self.meta.setdefault(pool_src.db_name, {})
-        if not object in self.meta[pool_src.db_name]:
-            self.meta[pool_src.db_name][object] = pool_src.get(object).fields_get(cr, uid)
-        fields = self.meta[pool_src.db_name][object]
+        self.meta.setdefault(pool_src, {})
+        if not object in self.meta[pool_src]:
+            self.meta[pool_src][object] = pool_src.get(object).fields_get(cr, uid)
+        fields = self.meta[pool_src][object]
         for f in fields:
             if f not in data:
                 continue
@@ -255,7 +254,7 @@ class base_synchro(osv.TransientModel):
             summary = '''Here is the synchronization report:
 
 Synchronization started: %s
-Synchronization finished: %s
+Synchronization finnished: %s
 
 Synchronized records: %d
 Records updated: %d
